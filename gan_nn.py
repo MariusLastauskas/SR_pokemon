@@ -15,15 +15,24 @@ from IPython import display
 
 def make_generator_model(input_neurons_count):
     model = tf.keras.Sequential()
-    model.add(layers.Dense(30*30*1, use_bias=False, input_shape=(input_neurons_count,)))
+    model.add(layers.Dense(30*30*20, use_bias=False, input_shape=(input_neurons_count,)))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
-    model.add(layers.Reshape((30, 30, 1)))
-    assert model.output_shape == (None, 30, 30, 1) # Note: None is the batch size
+    model.add(layers.Reshape((30, 30, 20)))
+    assert model.output_shape == (None, 30, 30, 20) # Note: None is the batch size
 
     model.add(layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False))
     assert model.output_shape == (None, 30, 30, 128)
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+    
+    model.add(layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False))
+    assert model.output_shape == (None, 30, 30, 128)
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+
+    model.add(layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
@@ -42,6 +51,15 @@ def make_discriminator_model(neuron_shape):
     model.add(layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same', input_shape=neuron_shape))
     model.add(layers.LeakyReLU())
     model.add(layers.Dropout(0.3))
+
+    model.add(layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same'))
+    model.add(layers.LeakyReLU())
+    model.add(layers.Dropout(0.3))
+    
+    model.add(layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same'))
+    model.add(layers.LeakyReLU())
+    model.add(layers.Dropout(0.3))
+
 
     model.add(layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same'))
     model.add(layers.LeakyReLU())

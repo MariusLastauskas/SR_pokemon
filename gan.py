@@ -20,7 +20,7 @@ print('###### Load minified train data')
 train_mini = gan_io.load_list('./prepaired_data/train_mini.dat')
 
 BUFFER_SIZE = 60000
-BATCH_SIZE = 256
+BATCH_SIZE = 25
 
 # Batch and shuffle the data
 print('###### Batch and shuffle the data')
@@ -41,8 +41,8 @@ discriminator = nn.make_discriminator_model([120, 120, 1])
 # plt.imshow(tf.reshape(generated_image, [120, 120]))
 # plt.show()
 
-generator_optimizer = tf.keras.optimizers.Adam(1e-4)
-discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
+generator_optimizer = tf.keras.optimizers.Adam(learning_rate=0.0002, beta_1=0.5)
+discriminator_optimizer = tf.keras.optimizers.Adam(learning_rate=0.0002, beta_1=0.5)
 
 checkpoint_dir = './training_checkpoints'
 checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
@@ -61,6 +61,15 @@ num_examples_to_generate = 16
 # We will reuse this seed overtime (so it's easier)
 # to visualize progress in the animated GIF)
 preview_input = train_mini[0:num_examples_to_generate]
+
+# create a line plot of loss for the gan and save to file
+def plot_history(gen_loss, disc_loss):
+	plt.plot(gen_loss, label='gen_loss')
+	plt.plot(disc_loss, label='disc_loss')
+	plt.legend()
+	# save plot to file
+	plt.savefig('./results_baseline/plot_line_plot_loss.png')
+	plt.close()
 
 # Notice the use of `tf.function`
 # This annotation causes the function to be "compiled".
@@ -82,19 +91,25 @@ def train_step(images):
     generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
     discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
 
+    return (gen_loss, disc_loss)
+
 def train(dataset, epochs):
+    gen_loss_hist, disc_loss_hist = list(), list()
     for epoch in range(epochs):
       start = time.time()
 
       for image_batch in dataset:
-        train_step(image_batch)
+        gen_loss, disc_loss = train_step(image_batch)
+        gen_loss_hist.append(gen_loss)
+        disc_loss_hist.append(disc_loss)
 
       # Produce images for the GIF as we go
       display.clear_output(wait=True)
       gan_io.generate_and_save_images(generator,
                               epoch + 1,
                               tf.reshape(preview_input, [num_examples_to_generate, 60 * 60]))
-
+      if (epoch + 1) % 2 == 0:
+        plot_history(gen_loss_hist, disc_loss_hist)
       # Save the model every 15 epochs
       if (epoch + 1) % 15 == 0:
         checkpoint.save(file_prefix = checkpoint_prefix)
