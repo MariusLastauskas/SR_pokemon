@@ -41,8 +41,8 @@ discriminator = nn.make_discriminator_model([120, 120, 1])
 # plt.imshow(tf.reshape(generated_image, [120, 120]))
 # plt.show()
 
-generator_optimizer = tf.keras.optimizers.Adam(learning_rate=0.0002, beta_1=0.5)
-discriminator_optimizer = tf.keras.optimizers.Adam(learning_rate=0.0002, beta_1=0.5)
+generator_optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001, beta_1=0.5)
+discriminator_optimizer = tf.keras.optimizers.Adam(learning_rate=0.0004, beta_1=0.5)
 
 checkpoint_dir = './training_checkpoints'
 checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
