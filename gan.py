@@ -31,7 +31,7 @@ train_dataset = tf.data.Dataset.from_tensor_slices((train_data, train_mini)).shu
 print('###### Instantiating models')
 
 generator = nn.make_generator_model(60 * 60)
-discriminator = nn.make_discriminator_model([120, 120, 1])
+discriminator = nn.make_discriminator_model([180, 120, 1])
 
 # single image generation/discrimination
 # generated_image = generator(tf.reshape(train_mini[0], [1, 60 * 60]))
@@ -79,8 +79,23 @@ def train_step(images):
         generated_images = generator(tf.reshape(images[1], [len(images[1]), 60 * 60]), training=True)
         generated_images = tf.reshape(generated_images, [len(generated_images), 120, 120, 1])
 
-        real_output = discriminator(tf.reshape(images[0], [len(images[0]), 120, 120, 1]), training=True)
-        fake_output = discriminator(generated_images, training=True)
+        real_image_tensors = []
+        fake_image_tensors = []
+
+        for i in range(images[0].get_shape()[0]):
+          mini_with_padding = tf.pad(images[1][i][0], [[0, 0], [30, 30]], 'CONSTANT')
+          concationated_real_image = tf.concat([images[0][i][0], mini_with_padding], 0)
+          concationated_fake_image = tf.concat([tf.reshape(generated_images[i], [120, 120]), mini_with_padding], 0)
+          reshaped_real_image = tf.reshape(concationated_real_image, [180, 120, 1])
+          reshaped_fake_image = tf.reshape(concationated_fake_image, [180, 120, 1])
+          real_image_tensors.append(reshaped_real_image)
+          fake_image_tensors.append(reshaped_fake_image)
+        
+        real_output_images = tf.stack(real_image_tensors)
+        fake_output_images = tf.stack(fake_image_tensors)
+
+        real_output = discriminator(real_output_images, training=True)
+        fake_output = discriminator(fake_output_images, training=True)
 
         gen_loss = nn.generator_loss(fake_output)
         disc_loss = nn.discriminator_loss(real_output, fake_output)
