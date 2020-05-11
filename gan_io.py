@@ -32,9 +32,9 @@ def load_list(file_path):
     with open(file_path, 'r') as reader:
         for item in reader:
             kk = kk + 1
-            if (kk == 100):
+            if (kk == 2000):
                 break
-            if (kk % 100 == 0):
+            if ((kk + 1) % 100 == 0):
                 print('item', kk)
             image = []
             for v in item.split(']][['):
@@ -43,7 +43,7 @@ def load_list(file_path):
                     pixel = []
                     for rgba in p.replace('[', '').replace(']', '').split(' '):
                         if len(rgba) > 0 and rgba != "\n":                        
-                            pixel.append(float(rgba) - 0.5)
+                            pixel.append(float(rgba))
                     vector.append(pixel)
                 image.append(vector)
             list.append(image)
@@ -54,7 +54,7 @@ def generate_and_save_images(model, epoch, test_input):
     # Notice `training` is set to False.
     # This is so all layers run in inference mode (batchnorm).
     print('################### generate and save image epch: ', epoch)
-
+    
     predictions = model(test_input, training=False)
     print('################### generated image')
     predictions = tf.reshape(predictions, [len(predictions), 120, 120])
@@ -67,3 +67,4 @@ def generate_and_save_images(model, epoch, test_input):
         plt.axis('off')
 
     plt.savefig('./results/image_at_epoch_{:04d}.png'.format(epoch))
+    plt.close()
