@@ -16,10 +16,12 @@ import gan_nn as nn
 from IPython import display
 
 def fit(epochs_count=1000):
+    state_config = gan_io.readConfigFile('./configuration/state.conf')
+    
     print('###### Load train data')
-    train_data = gan_io.load_list('./prepaired_data/train.dat')
+    train_data = gan_io.load_list('./prepaired_data/' + state_config['ACTIVE_TRAIN_DATA_FILE'][0])
     print('###### Load minified train data')
-    train_mini = gan_io.load_list('./prepaired_data/train_mini.dat')
+    train_mini = gan_io.load_list('./prepaired_data/minified/' + state_config['ACTIVE_TRAIN_DATA_FILE'][0])
 
     BUFFER_SIZE = 60000
     BATCH_SIZE = 25
@@ -38,7 +40,7 @@ def fit(epochs_count=1000):
     generator_optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001, beta_1=0.5)
     discriminator_optimizer = tf.keras.optimizers.Adam(learning_rate=0.0004, beta_1=0.5)
 
-    checkpoint_dir = './training_checkpoints'
+    checkpoint_dir = './network_states/' + state_config['ACTIVE_CHECKPOINT_FOLDER'][0]
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
     checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                     discriminator_optimizer=discriminator_optimizer,
