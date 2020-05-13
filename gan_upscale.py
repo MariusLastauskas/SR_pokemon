@@ -15,6 +15,7 @@ import gan_nn as nn
 from IPython import display
 
 def generate(image_path):
+    print(image_path)
     image = PIL.Image.open(image_path).convert('L')
     image = np.array(image)
     
@@ -41,5 +42,5 @@ def generate(image_path):
     plt.margins(0,0)
     plt.gca().xaxis.set_major_locator(plt.NullLocator())
     plt.gca().yaxis.set_major_locator(plt.NullLocator())
-    plt.savefig('./uploads/enhanced.png', bbox_inches = 'tight', pad_inches = 0)
+    plt.savefig('./results/enhanced.png', bbox_inches = 'tight', pad_inches = 0)
     return 'enhanced.png'
