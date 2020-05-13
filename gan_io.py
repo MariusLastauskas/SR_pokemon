@@ -74,6 +74,9 @@ def readConfigFile(file):
             if len(parts) == 2:
                 value = parts[1].strip().split(' ')
                 for i in range(len(value)):
-                    value[i] = int(value[i])
+                    try:
+                        value[i] = int(value[i])
+                    except:
+                        value[i] = value[i]
                 config[parts[0]] = value
     return config
