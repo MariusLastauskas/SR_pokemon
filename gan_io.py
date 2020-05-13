@@ -19,10 +19,7 @@ def save_list(list, file_path, normalization_factor = 1):
             for vector in item:
                 writer.write('[')
                 for pixel in vector:
-                    # writer.write('[')
-                    # for rgba in pixel:
-                        writer.write('%f ' % (pixel / (normalization_factor / 2) - 1))
-                    # writer.write(']')
+                    writer.write('%f ' % (pixel / (normalization_factor / 2) - 1))
                 writer.write(']')
             writer.write(']\n')
 
@@ -68,3 +65,15 @@ def generate_and_save_images(model, epoch, test_input):
 
     plt.savefig('./results/image_at_epoch_{:04d}.png'.format(epoch))
     plt.close()
+
+def readConfigFile(file):
+    config = {}
+    with open(file, 'r') as reader:
+        for item in reader:
+            parts = item.split(':')
+            if len(parts) == 2:
+                value = parts[1].strip().split(' ')
+                for i in range(len(value)):
+                    value[i] = int(value[i])
+                config[parts[0]] = value
+    return config

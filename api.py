@@ -3,7 +3,7 @@ from flask import request
 import os
 from werkzeug.utils import secure_filename
 
-import generate as gen
+import gan_upscale as gen
 
 UPLOAD_FOLDER = './uploads'
 ALLOWED_EXTENSIONS = set(['png'])
@@ -41,7 +41,7 @@ def home2():
     response = flask.jsonify({'some': '<h1>Distant Reading Archive</h1><p>This site is a prototype API for distant reading of science fiction novels.</p>'})
     response.headers.add('Access-Control-Allow-Origin', '*')
 
-    return flask.send_file('./uploads/enhanced.png', attachment_filename='enhanced.png')
+    return flask.send_file('./results/enhanced.png', attachment_filename='enhanced.png')
 
 
 app.run()
