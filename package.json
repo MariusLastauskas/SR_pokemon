@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/MariusLastauskas/SR_pokemon#readme",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "create-react-app": "^3.4.1"
   }
 }
